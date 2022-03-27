@@ -44,7 +44,10 @@ IF(NOT EXISTS "${archive_path}")
     FILE(DOWNLOAD "${BOOST_DOWNLOAD_URL}" "${archive_path}" SHOW_PROGRESS)
 ENDIF()
 FILE(MAKE_DIRECTORY  "${extracted_archive_path}")
-FILE(ARCHIVE_EXTRACT INPUT "${archive_path}" DESTINATION "${extracted_archive_path}")
+EXECUTE_PROCESS(
+    COMMAND ${CMAKE_COMMAND} -E tar xjf ${archive_path}
+    WORKING_DIRECTORY ${extracted_archive_path} 
+)
 SET(boost_sources    "${extracted_archive_path}/boost_${BOOST_VERSION_UNDERSCORE}")
 
 MESSAGE(STATUS ${boost_sources})
