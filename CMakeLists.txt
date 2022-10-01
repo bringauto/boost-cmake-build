@@ -70,7 +70,6 @@ ADD_CUSTOM_COMMAND(
         threading=multi 
         ${BOOST_BUILD_OPTIONS}
         address-model=64 --layout=tagged
-        --with-headers
         -j 16 install
     WORKING_DIRECTORY "${boost_sources}"
     COMMENT "Build Boost from sources"
