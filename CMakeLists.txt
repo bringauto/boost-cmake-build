@@ -55,7 +55,7 @@ MESSAGE(STATUS ${boost_sources})
 
 ADD_CUSTOM_COMMAND(OUTPUT "${boost_sources}/b2"
     MAIN_DEPENDENCY "${boost_sources}"
-    COMMAND ./bootstrap.sh
+    COMMAND ./bootstrap.sh --without-python
     WORKING_DIRECTORY "${boost_sources}"
     COMMENT "Boost bootstrap"
 )
@@ -65,6 +65,7 @@ ADD_CUSTOM_COMMAND(
     MAIN_DEPENDENCY "${boost_sources}"
     DEPENDS "${boost_sources}/b2"
     COMMAND ./b2 --prefix="${BOOST_INSTALL_DIR}"
+        --without-python
         runtime-link=shared,static
         link=shared,static
         variant=$<$<CONFIG:Debug>:debug>$<$<CONFIG:Release>:release>
