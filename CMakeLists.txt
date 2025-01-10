@@ -55,7 +55,7 @@ MESSAGE(STATUS ${boost_sources})
 
 ADD_CUSTOM_COMMAND(OUTPUT "${boost_sources}/b2"
     MAIN_DEPENDENCY "${boost_sources}"
-    COMMAND ./bootstrap.sh --without-python
+    COMMAND ./bootstrap.sh
     WORKING_DIRECTORY "${boost_sources}"
     COMMENT "Boost bootstrap"
 )
