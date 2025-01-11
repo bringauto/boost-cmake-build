@@ -10,6 +10,8 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 3.18)
 PROJECT(CMAKE_BOOST CXX)
 
+OPTION(WITHOUT_PYTHON "If ON Boost is build without Python, If off, with python" OFF)
+
 IF(NOT BOOST_VERSION)
     MESSAGE(FATAL_ERROR "Boost version variable BOOST_VERSION not specified!!")
 ENDIF()
@@ -49,9 +51,14 @@ EXECUTE_PROCESS(
     COMMAND ${CMAKE_COMMAND} -E tar xjf ${archive_path}
     WORKING_DIRECTORY ${extracted_archive_path} 
 )
-SET(boost_sources    "${extracted_archive_path}/boost_${BOOST_VERSION_UNDERSCORE}")
+SET(boost_sources "${extracted_archive_path}/boost_${BOOST_VERSION_UNDERSCORE}")
 
 MESSAGE(STATUS ${boost_sources})
+
+SET(extra_b2_args)
+IF(WITHOUT_PYTHON)
+    LIST(APPEND extra_b2_args "--without-python")
+ENDIF()
 
 ADD_CUSTOM_COMMAND(OUTPUT "${boost_sources}/b2"
     MAIN_DEPENDENCY "${boost_sources}"
@@ -64,8 +71,9 @@ ADD_CUSTOM_COMMAND(
     OUTPUT "${BOOST_INSTALL_DIR}"
     MAIN_DEPENDENCY "${boost_sources}"
     DEPENDS "${boost_sources}/b2"
-    COMMAND ./b2 --prefix="${BOOST_INSTALL_DIR}"
-        --without-python
+    COMMAND ./b2
+        ${extra_b2_args}
+        --prefix="${BOOST_INSTALL_DIR}"
         runtime-link=shared,static
         link=shared,static
         variant=$<$<CONFIG:Debug>:debug>$<$<CONFIG:Release>:release>
