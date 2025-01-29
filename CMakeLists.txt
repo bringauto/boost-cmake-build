@@ -46,7 +46,7 @@ IF(CMAKE_CROSSCOMPILING)
     ENDIF()
 
     IF (CMAKE_SYSTEM_PROCESSOR STREQUAL "aarch64" OR CMAKE_SYSTEM_PROCESSOR STREQUAL "arm")
-        # Create user-config.jam file with the content "using gcc : arm : $CXX"
+        # Create file that defines CXX compiler for Boost build
         set(USER_CONFIG_JAM_PATH "${boost_sources}/tools/build/src/user-config.jam")
         file(WRITE ${USER_CONFIG_JAM_PATH} "using gcc : arm : $ENV{CXX} ;\n")
 
