@@ -36,7 +36,25 @@ SET(BOOST_DOWNLOAD_URL "https://archives.boost.io/release/${BOOST_VERSION}/sourc
 SET(BOOST_INSTALL_DIR  "${CMAKE_CURRENT_BINARY_DIR}/boost_install")
 
 SET(BOOST_BUILD_OPTIONS "cxxflags=-fPIC" "cflags=-fPIC")
+IF(CMAKE_CROSSCOMPILING)
+    MESSAGE(STATUS "Cross-compiling mode detected")
+    MESSAGE(STATUS "Procesor " ${CMAKE_SYSTEM_PROCESSOR})
+    IF (CMAKE_SYSTEM_NAME STREQUAL "Linux")
+        SET(BOOST_BUILD_OPTIONS "${BOOST_BUILD_OPTIONS}" "target-os=linux")
+    ELSE ()
+        MESSAGE(FATAL_ERROR "Cross-compiling is not supported on ${CMAKE_SYSTEM_NAME}")
+    ENDIF()
 
+    IF (CMAKE_SYSTEM_PROCESSOR STREQUAL "aarch64")
+        # Create user-config.jam file with the content "using gcc : arm : $CXX"
+        set(USER_CONFIG_JAM_PATH "${boost_sources}/tools/build/src/user-config.jam")
+        file(WRITE ${USER_CONFIG_JAM_PATH} "using gcc : arm : $ENV{CXX} ;\n")
+
+        SET(BOOST_BUILD_OPTIONS "${BOOST_BUILD_OPTIONS}" "architecture=arm" "--with-toolset=gcc-arm")
+    ELSE ()
+        MESSAGE(FATAL_ERROR "Cross-compiling is not supported on processor ${CMAKE_SYSTEM_PROCESSOR}")
+    ENDIF()
+ENDIF ()
 
 
 SET(archive_path           ${CMAKE_CURRENT_BINARY_DIR}/boost_${BOOST_VERSION_UNDERSCORE}.tar.gz)
