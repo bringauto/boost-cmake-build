@@ -46,7 +46,7 @@ IF(CMAKE_CROSSCOMPILING)
     ENDIF()
 
     IF (CMAKE_SYSTEM_PROCESSOR STREQUAL "aarch64" OR CMAKE_SYSTEM_PROCESSOR STREQUAL "arm")
-        SET(BOOST_BUILD_OPTIONS "${BOOST_BUILD_OPTIONS}" "architecture=arm" "toolset=gcc-arm")
+        SET(BOOST_BUILD_OPTIONS "${BOOST_BUILD_OPTIONS}" "toolset=gcc-arm")
     ELSE ()
         MESSAGE(FATAL_ERROR "Cross-compiling is not supported on processor ${CMAKE_SYSTEM_PROCESSOR}")
     ENDIF()
