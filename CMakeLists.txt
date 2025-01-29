@@ -46,11 +46,7 @@ IF(CMAKE_CROSSCOMPILING)
     ENDIF()
 
     IF (CMAKE_SYSTEM_PROCESSOR STREQUAL "aarch64" OR CMAKE_SYSTEM_PROCESSOR STREQUAL "arm")
-        # Create file that defines CXX compiler for Boost build
-        set(USER_CONFIG_JAM_PATH "${boost_sources}/tools/build/src/user-config.jam")
-        file(WRITE ${USER_CONFIG_JAM_PATH} "using gcc : arm : $ENV{CXX} ;\n")
-
-        SET(BOOST_BUILD_OPTIONS "${BOOST_BUILD_OPTIONS}" "architecture=arm" "--with-toolset=gcc-arm")
+        SET(BOOST_BUILD_OPTIONS "${BOOST_BUILD_OPTIONS}" "architecture=arm" "toolset=gcc-arm")
     ELSE ()
         MESSAGE(FATAL_ERROR "Cross-compiling is not supported on processor ${CMAKE_SYSTEM_PROCESSOR}")
     ENDIF()
@@ -73,7 +69,13 @@ SET(boost_sources "${extracted_archive_path}/boost_${BOOST_VERSION_UNDERSCORE}")
 
 MESSAGE(STATUS ${boost_sources})
 
-SET(extra_b2_args)
+IF (CMAKE_CROSSCOMPILING)
+    # Create file that defines CXX compiler for Boost build
+    set(USER_CONFIG_JAM_PATH "${boost_sources}/tools/build/src/user-config.jam")
+    file(WRITE ${USER_CONFIG_JAM_PATH} "using gcc : arm : $ENV{CXX} ;\n")
+ENDIF()
+
+    SET(extra_b2_args)
 IF(WITHOUT_PYTHON)
     LIST(APPEND extra_b2_args "--without-python")
 ENDIF()
