@@ -45,7 +45,7 @@ IF(CMAKE_CROSSCOMPILING)
         MESSAGE(FATAL_ERROR "Cross-compiling is not supported on ${CMAKE_SYSTEM_NAME}")
     ENDIF()
 
-    IF (CMAKE_SYSTEM_PROCESSOR STREQUAL "aarch64")
+    IF (CMAKE_SYSTEM_PROCESSOR STREQUAL "aarch64" OR CMAKE_SYSTEM_PROCESSOR STREQUAL "arm")
         # Create user-config.jam file with the content "using gcc : arm : $CXX"
         set(USER_CONFIG_JAM_PATH "${boost_sources}/tools/build/src/user-config.jam")
         file(WRITE ${USER_CONFIG_JAM_PATH} "using gcc : arm : $ENV{CXX} ;\n")
