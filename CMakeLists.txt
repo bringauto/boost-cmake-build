@@ -38,7 +38,7 @@ SET(BOOST_INSTALL_DIR  "${CMAKE_CURRENT_BINARY_DIR}/boost_install")
 SET(BOOST_BUILD_OPTIONS "cxxflags=-fPIC" "cflags=-fPIC")
 IF(CMAKE_CROSSCOMPILING)
     MESSAGE(STATUS "Cross-compiling mode detected")
-    MESSAGE(STATUS "Procesor " ${CMAKE_SYSTEM_PROCESSOR})
+    MESSAGE(STATUS "Processor " ${CMAKE_SYSTEM_PROCESSOR})
     IF (CMAKE_SYSTEM_NAME STREQUAL "Linux")
         SET(BOOST_BUILD_OPTIONS "${BOOST_BUILD_OPTIONS}" "target-os=linux")
     ELSE ()
@@ -71,8 +71,9 @@ MESSAGE(STATUS ${boost_sources})
 
 IF (CMAKE_CROSSCOMPILING)
     # Create file that defines CXX compiler for Boost build
-    set(USER_CONFIG_JAM_PATH "${boost_sources}/tools/build/src/user-config.jam")
-    file(WRITE ${USER_CONFIG_JAM_PATH} "using gcc : arm : $ENV{CXX} ;\n")
+    MESSAGE(STATUS "Writing to tools/build/src/user-config.jam: using gcc : arm : $ENV{CXX} ;")
+    SET(USER_CONFIG_JAM_PATH "${boost_sources}/tools/build/src/user-config.jam")
+    FILE(WRITE ${USER_CONFIG_JAM_PATH} "using gcc : arm : $ENV{CXX} ;\n")
 ENDIF()
 
     SET(extra_b2_args)
@@ -94,7 +95,7 @@ ADD_CUSTOM_COMMAND(
     COMMAND ./b2
         ${extra_b2_args}
         --prefix="${BOOST_INSTALL_DIR}"
-        runtime-link=shared,static
+        runtime-link=shared
         link=shared,static
         variant=$<$<CONFIG:Debug>:debug>$<$<CONFIG:Release>:release>
         threading=multi 
