@@ -79,7 +79,7 @@ IF (CMAKE_CROSSCOMPILING)
     FILE(WRITE ${USER_CONFIG_JAM_PATH} "using gcc : arm : ${CMAKE_CXX_COMPILER} --sysroot=${CMAKE_SYSROOT} ;\n")
 ENDIF()
 
-    SET(extra_b2_args)
+SET(extra_b2_args)
 IF(WITHOUT_PYTHON)
     LIST(APPEND extra_b2_args "--without-python")
 ENDIF()
