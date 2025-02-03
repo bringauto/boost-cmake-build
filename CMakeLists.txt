@@ -10,6 +10,9 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 3.18)
 PROJECT(CMAKE_BOOST CXX)
 
+MESSAGE("CXX Compiler: ${CMAKE_CXX_COMPILER}")
+MESSAGE("C Compiler: ${CMAKE_C_COMPILER}")
+
 OPTION(WITHOUT_PYTHON "If ON Boost is build without Python, If off, with python" OFF)
 
 IF(NOT BOOST_VERSION)
@@ -36,7 +39,21 @@ SET(BOOST_DOWNLOAD_URL "https://archives.boost.io/release/${BOOST_VERSION}/sourc
 SET(BOOST_INSTALL_DIR  "${CMAKE_CURRENT_BINARY_DIR}/boost_install")
 
 SET(BOOST_BUILD_OPTIONS "cxxflags=-fPIC" "cflags=-fPIC")
+IF(CMAKE_CROSSCOMPILING)
+    MESSAGE(STATUS "Cross-compiling mode detected")
+    MESSAGE(STATUS "Processor " ${CMAKE_SYSTEM_PROCESSOR})
+    IF (CMAKE_SYSTEM_NAME STREQUAL "Linux")
+        SET(BOOST_BUILD_OPTIONS "${BOOST_BUILD_OPTIONS}" "target-os=linux")
+    ELSE ()
+        MESSAGE(FATAL_ERROR "Cross-compiling is not supported on ${CMAKE_SYSTEM_NAME}")
+    ENDIF()
 
+    IF (CMAKE_SYSTEM_PROCESSOR STREQUAL "aarch64" OR CMAKE_SYSTEM_PROCESSOR STREQUAL "arm")
+        SET(BOOST_BUILD_OPTIONS "${BOOST_BUILD_OPTIONS}" "toolset=gcc-arm")
+    ELSE ()
+        MESSAGE(FATAL_ERROR "Cross-compiling is not supported on processor ${CMAKE_SYSTEM_PROCESSOR}")
+    ENDIF()
+ENDIF ()
 
 
 SET(archive_path           ${CMAKE_CURRENT_BINARY_DIR}/boost_${BOOST_VERSION_UNDERSCORE}.tar.gz)
@@ -54,6 +71,13 @@ EXECUTE_PROCESS(
 SET(boost_sources "${extracted_archive_path}/boost_${BOOST_VERSION_UNDERSCORE}")
 
 MESSAGE(STATUS ${boost_sources})
+
+IF (CMAKE_CROSSCOMPILING)
+    # Create file that defines CXX compiler for Boost build
+    MESSAGE(STATUS "Writing to tools/build/src/user-config.jam: using gcc : arm : ${CMAKE_CXX_COMPILER} --sysroot=${CMAKE_SYSROOT} ;")
+    SET(USER_CONFIG_JAM_PATH "${boost_sources}/tools/build/src/user-config.jam")
+    FILE(WRITE ${USER_CONFIG_JAM_PATH} "using gcc : arm : ${CMAKE_CXX_COMPILER} --sysroot=${CMAKE_SYSROOT} ;\n")
+ENDIF()
 
 SET(extra_b2_args)
 IF(WITHOUT_PYTHON)
@@ -74,7 +98,7 @@ ADD_CUSTOM_COMMAND(
     COMMAND ./b2
         ${extra_b2_args}
         --prefix="${BOOST_INSTALL_DIR}"
-        runtime-link=shared,static
+        runtime-link=shared
         link=shared,static
         variant=$<$<CONFIG:Debug>:debug>$<$<CONFIG:Release>:release>
         threading=multi 
