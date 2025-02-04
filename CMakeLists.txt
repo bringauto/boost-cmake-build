@@ -10,9 +10,6 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 3.18)
 PROJECT(CMAKE_BOOST CXX)
 
-MESSAGE("CXX Compiler: ${CMAKE_CXX_COMPILER}")
-MESSAGE("C Compiler: ${CMAKE_C_COMPILER}")
-
 OPTION(WITHOUT_PYTHON "If ON Boost is build without Python, If off, with python" OFF)
 
 IF(NOT BOOST_VERSION)
@@ -74,8 +71,8 @@ MESSAGE(STATUS ${boost_sources})
 
 IF (CMAKE_CROSSCOMPILING)
     # Create file that defines CXX compiler for Boost build
-    MESSAGE(STATUS "Writing to tools/build/src/user-config.jam: using gcc : arm : ${CMAKE_CXX_COMPILER} --sysroot=${CMAKE_SYSROOT} ;")
     SET(USER_CONFIG_JAM_PATH "${boost_sources}/tools/build/src/user-config.jam")
+    MESSAGE(STATUS "Writing to ${USER_CONFIG_JAM_PATH}: using gcc : arm : ${CMAKE_CXX_COMPILER} --sysroot=${CMAKE_SYSROOT} ;")
     FILE(WRITE ${USER_CONFIG_JAM_PATH} "using gcc : arm : ${CMAKE_CXX_COMPILER} --sysroot=${CMAKE_SYSROOT} ;\n")
 ENDIF()
 
